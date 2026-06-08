@@ -1,10 +1,20 @@
+import os
+
 import streamlit as st
 import requests
 import pandas as pd
 from datetime import date
 import json
 
-API_BASE_URL = "http://localhost:8000"
+api_base_url = os.getenv("ST_API_BASE_URL")
+secret_api_url = None
+
+try:
+    secret_api_url = st.secrets.get("api_base_url")
+except Exception:
+    secret_api_url = None
+
+API_BASE_URL = secret_api_url or api_base_url or "http://localhost:8000"
 
 st.set_page_config(
     page_title="AI CRM Automation Suite",
@@ -12,6 +22,12 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
+if API_BASE_URL == "http://localhost:8000":
+    st.warning(
+        "Using localhost backend. On Streamlit Cloud, set ST_API_BASE_URL or secrets.api_base_url "
+        "to your deployed backend URL so the frontend can connect."
+    )
 
 st.markdown("""
     <style>
